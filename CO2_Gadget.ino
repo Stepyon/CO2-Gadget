@@ -169,6 +169,7 @@ bool hasBattery = false;
 bool workingOnExternalPower = true;    // True if working on external power (USB connected)
 uint32_t actualDisplayBrightness = 0;  // To know if it's on or off
 bool displayOffOnExternalPower = false;
+bool displayOnByPIRSensor = false;
 uint16_t timeToDisplayOff = 0;                // Time in seconds to turn off the display to save power.
 volatile uint64_t lastTimeButtonPressed = 0;  // Last time stamp button up was pressed
 
@@ -219,7 +220,8 @@ uint64_t timeCaptivePortalStarted = 0;
 
 #include "AsyncJson.h"
 #ifdef SUPPORT_OTA
-#include <AsyncElegantOTA.h>
+// #include <AsyncElegantOTA.h>  // Deprecated
+#include <ElegantOTA.h>
 #endif
 #include <FS.h>
 #include <SPIFFS.h>
@@ -311,7 +313,8 @@ bool displayNotification(String notificationText, notificationTypes notification
 /*********                                                                                   *********/
 /*****************************************************************************************************/
 #ifdef SUPPORT_OTA
-#include <AsyncElegantOTA.h>
+// #include <AsyncElegantOTA.h>  // Deprecated
+#include <ElegantOTA.h>
 #endif
 
 /*****************************************************************************************************/
@@ -354,6 +357,13 @@ bool displayNotification(String notificationText, notificationTypes notification
 /*********                                                                                   *********/
 /*****************************************************************************************************/
 #include "CO2_Gadget_Menu.h"
+
+/*****************************************************************************************************/
+/*********                                                                                   *********/
+/*********                         INCLUDE PIR SENSOR FUNCIONALITY                           *********/
+/*********                                                                                   *********/
+/*****************************************************************************************************/
+#include "CO2_Gadget_PIR.h"
 
 /*****************************************************************************************************/
 /*********                                                                                   *********/
@@ -454,8 +464,8 @@ void outputsRGBLeds() {
 #ifdef GREEN_PIN
         digitalWrite(GREEN_PIN, GREEN_PIN_HIGH);
 #endif
-        digitalWrite(BLUE_PIN, BLUE_PIN_LOW);
-        digitalWrite(RED_PIN, RED_PIN_HIGH);
+        digitalWrite(BLUE_PIN, BLUE_PIN_HIGH);
+        digitalWrite(RED_PIN, RED_PIN_LOW);
         return;
     }
 #ifdef GREEN_PIN
@@ -663,6 +673,7 @@ void setup() {
 #endif
     }
     initImprov();
+    initPIR();
     if (timeToWaitForImprov > 0) {
         Serial.println("-->[STUP] Waiting for Improv Serial " + String(timeToWaitForImprov) + " seconds...");
     } else {
@@ -689,4 +700,5 @@ void loop() {
     buttonsLoop();
     menuLoop();
     BLELoop();
+    PIRLoop();
 }

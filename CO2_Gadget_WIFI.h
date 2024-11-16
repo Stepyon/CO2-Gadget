@@ -1518,7 +1518,8 @@ bool connectToWiFi() {
 
 void initOTA() {
 #ifdef SUPPORT_OTA
-    AsyncElegantOTA.begin(&server);
+    // AsyncElegantOTA.begin(&server);  // Deprecated
+    ElegantOTA.begin(&server);
     Serial.println("-->[WiFi] OTA ready");
 #endif
 }
@@ -1664,7 +1665,8 @@ void OTALoop() {
 #endif
     if (isDownloadingBLE) return;
     if ((activeWIFI) && (activeOTA) && (!troubledWIFI) && (WiFi.status() == WL_CONNECTED)) {
-        AsyncElegantOTA.loop();
+        // AsyncElegantOTA.loop();  / Deprecated
+        ElegantOTA.loop();
     }
 #endif
 }

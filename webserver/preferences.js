@@ -122,6 +122,7 @@ function populateFormWithPreferences(preferences) {
     setFormCheckbox("showHumidity", preferences.showHumidity);
     setFormCheckbox("showBattery", preferences.showBattery);
     setFormCheckbox("showCO2", preferences.showCO2);
+    setFormCheckbox("usePIR", preferences.usePIR);
     setFormCheckbox("dispOffOnExP", preferences.dispOffOnExP);
     setFormCheckbox("displayReverse", preferences.displayReverse);
     setFormValue("DisplayBright", preferences.DisplayBright);
@@ -212,6 +213,7 @@ function collectPreferencesData() {
         setValue("tKeepAlMQTT");
         setValue("tKeepAlESPNow");
         setValue("dispOffOnExP", 'checked');
+        setValue("usePIR", 'checked');
         setValue("wifiSSID");
         setValue("hostName");
         setValue("useStaticIP", 'checked');

@@ -43,10 +43,11 @@ void buzzerLoop() {
     }
 
     if (co2 > co2RedRange && belowRedRange) {
-        shouldWakeUpDisplay = true;
+        //shouldWakeUpDisplay = true;
         beepBuzzer();
-    } else if (co2 < (co2RedRange - BUZZER_HYSTERESIS))
+    } else if (co2 < (co2RedRange - BUZZER_HYSTERESIS)){
         belowRedRange = true;
+    }
 #endif
 }
 

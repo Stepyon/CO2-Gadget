@@ -237,7 +237,7 @@ void SetTempCO2Sensor(int8_t sensor) {
   else if (sensor==CM1106)     {strSensor = "CM1106";}
   else if (sensor==SENSEAIRS8) {strSensor = "SENSEAIRS8";}
   else {strSensor = "Unknown";}
-  paddedString = rightPad(strSensor, 30);  
+  paddedString = rightPad(strSensor, 32);  
   paddedString.toCharArray(tempMQTTTopic, paddedString.length());
   #ifdef DEBUG_ARDUINOMENU
   Serial.printf("-->[MENU] Setting selected CO2 sensor to: #%s#\n", paddedString.c_str());
@@ -633,6 +633,10 @@ MENU(temperatureConfigMenu, "Temp Config", doNothing, noEvent, wrapStyle
   ,SUBMENU(showFahrenheitMenu)
   ,EXIT("<Back"));
 
+TOGGLE(displayOnByPIRSensor, activeDisplayOnByPIRSensor, "PIR On: ", doNothing, noEvent, wrapStyle
+  ,VALUE("ON", true, doNothing, noEvent)
+  ,VALUE("OFF", false, doNothing, noEvent));
+
 TOGGLE(displayOffOnExternalPower, activeDisplayOffMenuOnBattery, "Off on USB: ", doNothing,noEvent, wrapStyle
   ,VALUE("ON", true, doNothing, noEvent)
   ,VALUE("OFF", false, doNothing, noEvent));
@@ -699,6 +703,7 @@ MENU(displayConfigMenu, "Display Config", doNothing, noEvent, wrapStyle
   ,FIELD(DisplayBrightness, "Brightness:", "", 10, 255, 10, 10, doSetDisplayBrightness, anyEvent, wrapStyle)
 #endif  
   ,FIELD(timeToDisplayOff, "Time To Off:", "", 0, 900, 5, 5, doNothing, noEvent, wrapStyle)
+  ,SUBMENU(activeDisplayOnByPIRSensor)
   ,SUBMENU(activeDisplayOffMenuOnBattery)
   ,SUBMENU(activeDisplayReverse)
   ,SUBMENU(activeDisplayShowTemperature)
@@ -986,37 +991,37 @@ void copyStringToCharArray(const String &source, char *destination, size_t size,
 }
 
 void loadTempArraysWithActualValues() {
-    copyStringToCharArray(rightPad(rootTopic, 30), tempMQTTTopic, 30, "tempMQTTTopic");
-    copyStringToCharArray(rightPad(mqttClientId, 30), tempMQTTClientId, 30, "tempMQTTClientId");
-    copyStringToCharArray(rightPad(mqttBroker, 30), tempMQTTBrokerIP, 30, "tempMQTTBrokerIP");
-    copyStringToCharArray(rightPad(mqttUser, 30), tempMQTTUser, 30, "tempMQTTUser");
+    copyStringToCharArray(rightPad(rootTopic, 32), tempMQTTTopic, 32, "tempMQTTTopic");
+    copyStringToCharArray(rightPad(mqttClientId, 32), tempMQTTClientId, 32, "tempMQTTClientId");
+    copyStringToCharArray(rightPad(mqttBroker, 32), tempMQTTBrokerIP, 32, "tempMQTTBrokerIP");
+    copyStringToCharArray(rightPad(mqttUser, 32), tempMQTTUser, 32, "tempMQTTUser");
 
 #ifdef WIFI_PRIVACY
-    copyStringToCharArray(rightPad(" ", 30), tempMQTTPass, 30, "tempMQTTPass");
+    copyStringToCharArray(rightPad(" ", 32), tempMQTTPass, 32, "tempMQTTPass");
 #else
-    copyStringToCharArray(rightPad(mqttPass, 30), tempMQTTPass, 30, "tempMQTTPass");
+    copyStringToCharArray(rightPad(mqttPass, 32), tempMQTTPass, 32, "tempMQTTPass");
 #endif
 
-    copyStringToCharArray(rightPad(wifiSSID, 30), tempWiFiSSID, 30, "tempWiFiSSID");
+    copyStringToCharArray(rightPad(wifiSSID, 32), tempWiFiSSID, 32, "tempWiFiSSID");
 
 #ifdef WIFI_PRIVACY
-    copyStringToCharArray(rightPad(" ", 30), tempWiFiPasswrd, 30, "tempWiFiPasswrd");
+    copyStringToCharArray(rightPad(" ", 32), tempWiFiPasswrd, 32, "tempWiFiPasswrd");
 #else
-    copyStringToCharArray(rightPad(wifiPass, 30), tempWiFiPasswrd, 30, "tempWiFiPasswrd");
+    copyStringToCharArray(rightPad(wifiPass, 32), tempWiFiPasswrd, 32, "tempWiFiPasswrd");
 #endif
 
-    copyStringToCharArray(rightPad(hostName, 30), tempHostName, 30, "tempHostName");
+    copyStringToCharArray(rightPad(hostName, 32), tempHostName, 32, "tempHostName");
 
 #ifdef SUPPORT_BLE
-    copyStringToCharArray(rightPad(provider.getDeviceIdString(), 30), tempBLEDeviceId, 30, "tempBLEDeviceId");
+    copyStringToCharArray(rightPad(provider.getDeviceIdString(), 32), tempBLEDeviceId, 32, "tempBLEDeviceId");
 #else
-    copyStringToCharArray(rightPad("Unavailable", 30), tempBLEDeviceId, 30, "tempBLEDeviceId");
+    copyStringToCharArray(rightPad("Unavailable", 32), tempBLEDeviceId, 32, "tempBLEDeviceId");
 #endif
 
     String co2SensorString = (sensorsGetMainDeviceSelected() == "SCD30" || sensorsGetMainDeviceSelected() == "SCD4x")
-                                 ? rightPad("AutoSensor (I2C)", 30)
-                                 : rightPad(sensorsGetMainDeviceSelected(), 30);
-    copyStringToCharArray(co2SensorString, tempCO2Sensor, 30, "tempCO2Sensor");
+                                 ? rightPad("AutoSensor (I2C)", 32)
+                                 : rightPad(sensorsGetMainDeviceSelected(), 32);
+    copyStringToCharArray(co2SensorString, tempCO2Sensor, 32, "tempCO2Sensor");
 
     snprintf(tempESPNowAddress, sizeof(tempESPNowAddress), "%02X%02X%02X%02X%02X%02X",
              peerESPNowAddress[0], peerESPNowAddress[1], peerESPNowAddress[2],

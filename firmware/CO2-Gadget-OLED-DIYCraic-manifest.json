@@ -1,0 +1,13 @@
+{
+  "name": "CO2 Gadget OLED DIYCraic firmware",
+  "version": "2024.11.16",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        { "path": "CO2-Gadget-OLED-DIYCraic-firmware.bin", "offset": 0 },
+      ]
+    }
+  ]
+}

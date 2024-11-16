@@ -192,6 +192,7 @@ void printActualSettings() {
     Serial.println("-->[PREF] tKeepAlMQTT:\t #" + String(timeToKeepAliveMQTT) + "#");
     Serial.println("-->[PREF] tKeepAlESPNow:\t #" + String(timeToKeepAliveESPNow) + "#");
     Serial.println("-->[PREF] dispOffOnExP:\t#" + String(displayOffOnExternalPower ? "Enabled" : "Disabled") + "# (" + String(displayOffOnExternalPower) + ")");
+    Serial.println("-->[PREF] usePIR:\t#" + String(displayOnByPIRSensor ? "Enabled" : "Disabled") + "# (" + String(displayOnByPIRSensor) + ")");
     Serial.println("-->[PREF] wifiSSID:\t#" + wifiSSID + "#");
 #ifndef WIFI_PRIVACY
     Serial.println("-->[PREF] wifiPass:\t#" + wifiPass + "#");
@@ -302,7 +303,7 @@ void initPreferences() {
     timeBetweenESPNowPublish = preferences.getUInt("tToPubESPNow", 60);
     timeToKeepAliveMQTT = preferences.getUInt("tKeepAlMQTT", 300);
     timeToKeepAliveESPNow = preferences.getUInt("tKeepAlESPNow", 300);
-
+    displayOnByPIRSensor = preferences.getBool("usePIR", false);
     displayOffOnExternalPower = preferences.getBool("dispOffOnExP", false);
     wifiSSID = preferences.getString("wifiSSID", wifiSSID).c_str();
     wifiPass = preferences.getString("wifiPass", wifiPass).c_str();
@@ -427,6 +428,7 @@ void putPreferences() {
     preferences.putUInt("tKeepAlESPNow", timeToKeepAliveESPNow);
     preferences.putUInt("tToPubMQTT", timeBetweenMQTTPublish);
     preferences.putUInt("tToPubESPNow", timeBetweenESPNowPublish);
+    preferences.putBool("usePIR", displayOnByPIRSensor);
     preferences.putBool("dispOffOnExP", displayOffOnExternalPower);
     preferences.putString("wifiSSID", wifiSSID);
     preferences.putString("wifiPass", wifiPass);
@@ -537,6 +539,7 @@ String getActualSettingsAsJson(bool includePasswords = false) {
     doc["tKeepAlESPNow"] = timeToKeepAliveESPNow;
     doc["tToPubMQTT"] = timeBetweenMQTTPublish;
     doc["tToPubESPNow"] = timeBetweenESPNowPublish;
+    doc["usePIR"] = displayOnByPIRSensor;
     doc["dispOffOnExP"] = displayOffOnExternalPower;
     doc["wifiSSID"] = wifiSSID;
     // if includePasswords is false, do not include the password
@@ -685,6 +688,9 @@ bool handleSavePreferencesFromJSON(String jsonPreferences) {
         }
         if (JsonDocument.containsKey("activeMQTT")) {
             activeMQTT = JsonDocument["activeMQTT"];
+        }
+        if (JsonDocument.containsKey("usePIR")) {
+            displayOnByPIRSensor = JsonDocument["usePIR"];
         }
         if (JsonDocument.containsKey("activeESPNOW")) {
             activeESPNOW = JsonDocument["activeESPNOW"];
