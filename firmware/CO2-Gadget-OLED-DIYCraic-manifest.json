@@ -6,7 +6,7 @@
     {
       "chipFamily": "ESP32",
       "parts": [
-        { "path": "CO2-Gadget-OLED-DIYCraic-firmware.bin", "offset": 0 },
+        { "path": "CO2-Gadget-OLED-DIYCraic-firmware.bin", "offset": 0 }
       ]
     }
   ]
