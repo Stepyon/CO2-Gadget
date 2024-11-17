@@ -12,7 +12,7 @@
           { "path": "oled-bootloader.bin", "offset": 4096 },
           { "path": "oled-partitions.bin", "offset": 32768 },
           { "path": "oled-firmware.bin", "offset": 65536 },
-          { "path": "oled-spiffs.bin", "offset": 3604480 }
+          { "path": "oled-spiffs.bin", "offset": 1654784 }
         ]
       }
   ]
