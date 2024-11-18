@@ -133,8 +133,6 @@ bool displayReverse = false;
 bool showFahrenheit = false;
 volatile bool displayShowTemperature = true;
 volatile bool displayShowHumidity = true;
-volatile bool displayShowBattery = true;
-volatile bool displayShowBatteryVoltage = false;
 volatile bool displayShowCO2 = true;
 volatile bool displayShowPM25 = true;
 bool debugSensors = false;
@@ -147,7 +145,6 @@ uint16_t measurementInterval = 10;
 uint16_t sampleInterval = 60;
 bool bleInitialized = false;
 int8_t selectedCO2Sensor = -1;
-bool outputsModeRelay = false;
 
 // Variables for buzzer functionality
 bool buzzerBeeping = false;
@@ -157,18 +154,8 @@ int16_t timeBetweenBuzzerBeeps = -1;
 
 uint64_t timeInitializationCompleted = 0;
 
-// Variables for Battery reading
-float batteryVoltage = 0;
-uint8_t batteryLevel = 100;
-uint16_t vRef = 960;
-uint16_t batteryDischargedMillivolts = 3200;    // Voltage of battery when we consider it discharged (0%).
-uint16_t batteryFullyChargedMillivolts = 4200;  // Voltage of battery when it is considered fully charged (100%).
-
 // Variables to control automatic display off to save power
-bool hasBattery = false;
-bool workingOnExternalPower = true;    // True if working on external power (USB connected)
 uint32_t actualDisplayBrightness = 0;  // To know if it's on or off
-bool displayOffOnExternalPower = false;
 bool displayOnByPIRSensor = false;
 uint16_t timeToDisplayOff = 0;                // Time in seconds to turn off the display to save power.
 volatile uint64_t lastTimeButtonPressed = 0;  // Last time stamp button up was pressed
@@ -256,14 +243,14 @@ bool displayNotification(String notificationText, notificationTypes notification
 /*********                           INCLUDE BATTERY FUNCTIONALITY                           *********/
 /*********                                                                                   *********/
 /*****************************************************************************************************/
-#include "CO2_Gadget_Battery.h"
+//#include "CO2_Gadget_Battery.h"
 
 /*****************************************************************************************************/
 /*********                                                                                   *********/
 /*********               SETUP NEOPIXEL (ES2812b AND OTHERS) LED FUNCTIONALITY               *********/
 /*********                                                                                   *********/
 /*****************************************************************************************************/
-#include "CO2_Gadget_Neopixel.h"
+//#include "CO2_Gadget_Neopixel.h"
 
 /*****************************************************************************************************/
 /*********                                                                                   *********/
@@ -394,22 +381,22 @@ void processPendingCommands() {
     if (isDownloadingBLE) return;
     if (pendingCalibration == true) {
         if ((calibrationValue >= 0) && (calibrationValue <= 2000)) {
-            Serial.println("-->[MAIN] Calibrating CO2 sensor at " + String(calibrationValue) + " PPM");
+            //Serial.println("-->[MAIN] Calibrating CO2 sensor at " + String(calibrationValue) + " PPM");
             pendingCalibration = false;
             sensors.setCO2RecalibrationFactor(calibrationValue);
         } else {
-            Serial.println("-->[MAIN] Avoiding calibrating CO2 sensor with invalid value at " + String(calibrationValue) + " PPM");
+            //Serial.println("-->[MAIN] Avoiding calibrating CO2 sensor with invalid value at " + String(calibrationValue) + " PPM");
             pendingCalibration = false;
         }
     }
 
     if (pendingAmbientPressure == true) {
         if (ambientPressureValue != 0) {
-            Serial.println("-->[MAIN] Setting AmbientPressure for CO2 sensor at " + String(ambientPressureValue) + " mbar\n");
+            //Serial.println("-->[MAIN] Setting AmbientPressure for CO2 sensor at " + String(ambientPressureValue) + " mbar\n");
             pendingAmbientPressure = false;
             // sensors.scd30.setAmbientPressure(ambientPressureValue); To-Do: Implement after migration to sensorlib 0.7.3
         } else {
-            Serial.println("-->[MAIN] Avoiding setting AmbientPressure for CO2 sensor with invalid value at " + String(ambientPressureValue) + " mbar\n");
+            //Serial.println("-->[MAIN] Avoiding setting AmbientPressure for CO2 sensor with invalid value at " + String(ambientPressureValue) + " mbar\n");
             pendingAmbientPressure = false;
         }
     }
@@ -426,30 +413,6 @@ void initGPIO() {
     digitalWrite(RED_PIN, LOW);
 }
 
-void outputsRelays() {
-    if ((!outputsModeRelay) || (co2 == 0)) return;  // Don't turn on relays until there is CO2 Data
-#ifdef GREEN_PIN
-    if (co2 >= co2OrangeRange) {
-        digitalWrite(GREEN_PIN, GREEN_PIN_LOW);
-    }
-    if (co2 < co2OrangeRange) {
-        digitalWrite(GREEN_PIN, GREEN_PIN_HIGH);
-    }
-#endif
-    if (co2 >= co2OrangeRange) {
-        digitalWrite(BLUE_PIN, BLUE_PIN_HIGH);
-    }
-    if (co2 < co2OrangeRange - PIN_HYSTERESIS) {
-        digitalWrite(BLUE_PIN, BLUE_PIN_LOW);
-    }
-    if (co2 > co2RedRange) {
-        digitalWrite(RED_PIN, RED_PIN_HIGH);
-    }
-    if (co2 <= co2RedRange - PIN_HYSTERESIS) {
-        digitalWrite(RED_PIN, RED_PIN_LOW);
-    }
-}
-
 bool orangeLedOn = false;
 bool redLedOn = false;
 
@@ -458,7 +421,7 @@ bool greenLedOn = false;
 #endif
 
 void outputsRGBLeds() {
-    if ((outputsModeRelay) || (co2 == 0)) return;  // Don't turn on led until there is CO2 Data
+    if (co2 == 0) return;  // Don't turn on led until there is CO2 Data
     
     bool redNewState = co2 > co2RedRange;
     bool orangeNewState = !redNewState && co2 >= co2OrangeRange;
@@ -484,9 +447,7 @@ void outputsRGBLeds() {
 
 void outputsLoop() {
     if (isDownloadingBLE) return;
-    outputsRelays();
     outputsRGBLeds();
-    neopixelLoop();
     buzzerLoop();
 }
 
@@ -524,11 +485,6 @@ void adjustBrightnessLoop() {
         shouldWakeUpDisplay = false;
     }
 
-    // If battery pin not connected, assume it's working on external power
-    if (batteryVoltage < 1) {
-        workingOnExternalPower = true;
-    }
-
     if (inMenu) {
         setDisplayBrightness(DisplayBrightness);
         return;
@@ -536,9 +492,6 @@ void adjustBrightnessLoop() {
 
     // Display backlight IS sleeping
     if ((actualDisplayBrightness == 0) && (actualDisplayBrightness != DisplayBrightness)) {
-        if ((!displayOffOnExternalPower) && (workingOnExternalPower)) {
-            setDisplayBrightness(DisplayBrightness);
-        }
         if (timeToDisplayOff == 0) {
             setDisplayBrightness(DisplayBrightness);
         }
@@ -551,31 +504,8 @@ void adjustBrightnessLoop() {
         publishMQTTLogData("Setting display brightness to " + String(DisplayBrightness));
     }
 
-    // If configured not to turn off the display on external power and it's working on external power, do nothing and return (except if DisplayBrightness is 0, then turn on display))
-    if ((workingOnExternalPower) && (!displayOffOnExternalPower)) {
-        if (actualDisplayBrightness == 0) {
-            setDisplayBrightness(DisplayBrightness);  // Exception: When USB connected (just connected) & TFT is OFF -> Turn Display ON
-            // publishMQTTLogData("Turning on display on external power. Actual brightness: " + String(actualDisplayBrightness));
-            // Serial.println("-->[MAIN] Turning on display on external power. Actual brightness: " + String(actualDisplayBrightness));
-            // delay(10);
-        }
-        return;
-    }
-
-    if (timeToDisplayOff == 0) return;  // If timeToDisplayOff is 0, don't turn off the display
-
-    if ((actualDisplayBrightness != 0) && (millis() - lastTimeButtonPressed >= timeToDisplayOff * 1000) && DisplayBrightness > 0) {
-        if ((workingOnExternalPower) && (displayOffOnExternalPower)) {
-            Serial.println("-->[MAIN] Turning off display on external power to save power. Actual brightness: " + String(actualDisplayBrightness));
-            turnOffDisplay();
-            // publishMQTTLogData("[MAIN] Turning off display on external power to save power. Actual brightness: " + String(actualDisplayBrightness));
-        }
-        if (!workingOnExternalPower) {
-            // Serial.println("-->[MAIN] Turning off display on battery to save power. Actual brightness: " + String(actualDisplayBrightness));
-            turnOffDisplay();
-            // publishMQTTLogData("[MAIN] Turning off display on battery to save power. Actual brightness: " + String(actualDisplayBrightness));
-            delay(10);
-        }
+    if (timeToDisplayOff > 0 && actualDisplayBrightness != 0 && (millis() - lastTimeButtonPressed >= timeToDisplayOff * 1000) && DisplayBrightness > 0) {
+        turnOffDisplay();
     }
 #endif
 }
@@ -595,26 +525,18 @@ void setCpuFrequencyAndReinitSerial(int16_t newCpuFrequency) {
 #endif
 }
 
-void utilityLoop() {
-    if (isDownloadingBLE) return;
-    int16_t actualCPUFrequency = getCpuFrequencyMhz();
-    const int16_t highCpuFrequency = 240;
-    const int16_t lowCpuFrequency = 80;
+// void utilityLoop() {
+//     if (isDownloadingBLE) return;
+//     int16_t actualCPUFrequency = getCpuFrequencyMhz();
+//     const int16_t highCpuFrequency = 240;
+//     const int16_t lowCpuFrequency = 80;
 
-    if (workingOnExternalPower && actualCPUFrequency != highCpuFrequency) {
-        setCpuFrequencyMhz(highCpuFrequency);
-    } else if (!workingOnExternalPower && actualCPUFrequency != lowCpuFrequency) {
-        setCpuFrequencyMhz(lowCpuFrequency);
-    }
-
-    // if (workingOnExternalPower && actualCPUFrequency != highCpuFrequency) {
-    //     Serial.printf("-->[BATT] Battery voltage: %.2fV. Increasing CPU frequency to %dMHz\n", batteryVoltage, highCpuFrequency);
-    //     setCpuFrequencyAndReinitSerial(highCpuFrequency);
-    // } else if (!workingOnExternalPower && actualCPUFrequency != lowCpuFrequency) {
-    //     Serial.printf("-->[BATT] Battery voltage: %.2fV. Decreasing CPU frequency to %dMHz\n", batteryVoltage, lowCpuFrequency);
-    //     setCpuFrequencyAndReinitSerial(lowCpuFrequency);
-    // }
-}
+//     if (actualCPUFrequency != highCpuFrequency) {
+//         setCpuFrequencyMhz(highCpuFrequency);
+//     } else if (actualCPUFrequency != lowCpuFrequency) {
+//         setCpuFrequencyMhz(lowCpuFrequency);
+//     }
+// }
 
 // application entry point
 void setup() {
@@ -650,9 +572,7 @@ void setup() {
     Serial.printf("-->[STUP] Starting up...\n\n");
 
     initPreferences();
-    initBattery();
     initGPIO();
-    initNeopixel();
     initBuzzer();
 #if defined(SUPPORT_TFT) || defined(SUPPORT_OLED) || defined(SUPPORT_EINK)
     initDisplay(false);
@@ -693,7 +613,6 @@ void setup() {
 }
 
 void loop() {
-    batteryLoop();
     // utilityLoop();
     improvLoop();
     wifiClientLoop();

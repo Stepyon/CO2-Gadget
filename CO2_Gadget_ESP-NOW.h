@@ -39,7 +39,6 @@ typedef struct struct_message_CO2_Gadget_t {
     float temp;
     float hum;
     uint16_t co2;
-    float battery;
     int readingId;
     int command = cmdCO2GadgetNone;
     uint16_t parameter = 0;
@@ -75,8 +74,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
             Serial.println(incomingReadings.temp);
             Serial.print("-->[ESPN] Humidity:\t");
             Serial.println(incomingReadings.hum);
-            Serial.print("-->[ESPN] Battery:\t");
-            Serial.println(incomingReadings.battery);
             Serial.print("-->[ESPN] Command:\t");
             Serial.println(incomingReadings.command);
             Serial.print("-->[ESPN] Parameter:\t");
@@ -185,7 +182,6 @@ void publishESPNow() {
         outgoingReadings.co2 = co2;
         outgoingReadings.temp = temp;
         outgoingReadings.hum = hum;
-        outgoingReadings.battery = batteryVoltage;
         outgoingReadings.readingId++;
 
         // Send message via ESP-NOW

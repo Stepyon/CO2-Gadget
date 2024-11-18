@@ -591,26 +591,6 @@ MENU(espnowConfigMenu, "ESP-NOW Config", doNothing, noEvent, wrapStyle
   ,EXIT("<Back"));
 #endif // SUPPORT_ESPNOW
 
-result doSetvRef(eventMask e, navNode &nav, prompt &item) {
-  battery.begin(vRef, voltageDividerRatio, &asigmoidal);
-  delay(10);
-  batteryVoltage = (float)battery.voltage() / 1000;
-  nav.target-> dirty = true;
-  return proceed;
-}
-
-TOGGLE(hasBattery, hasBatteryMenu, "Has battery: ", doNothing, noEvent, wrapStyle
-  ,VALUE("ON", true, doNothing, noEvent)
-  ,VALUE("OFF", false, doNothing, noEvent));
-
-MENU(batteryConfigMenu, "Battery Config", doNothing, noEvent, wrapStyle
-  ,SUBMENU(hasBatteryMenu)
-  ,FIELD(batteryVoltage, "Battery:", "V", 0, 9, 0, 0, doNothing, noEvent, noStyle)
-  ,FIELD(vRef, "Voltage ref:", "", 0, 2000, 10, 10, doSetvRef, anyEvent, noStyle)
-  ,FIELD(batteryFullyChargedMillivolts, "Bat Full (mV):", "", 0, 4200, 10, 10, doNothing, noEvent, noStyle)
-  ,FIELD(batteryDischargedMillivolts, "Bat Empty (mV):", "", 2700, 3700, 10, 10, doNothing, noEvent, noStyle)
-  ,EXIT("<Back"));
-
 result doSetTempOffset(eventMask e, navNode &nav, prompt &item) {
   #ifdef DEBUG_ARDUINOMENU
     Serial.printf("-->[MENU] Setting setTempOffset to %.2f\n",tempOffset);
@@ -634,10 +614,6 @@ MENU(temperatureConfigMenu, "Temp Config", doNothing, noEvent, wrapStyle
   ,EXIT("<Back"));
 
 TOGGLE(displayOnByPIRSensor, activeDisplayOnByPIRSensor, "PIR On: ", doNothing, noEvent, wrapStyle
-  ,VALUE("ON", true, doNothing, noEvent)
-  ,VALUE("OFF", false, doNothing, noEvent));
-
-TOGGLE(displayOffOnExternalPower, activeDisplayOffMenuOnBattery, "Off on USB: ", doNothing,noEvent, wrapStyle
   ,VALUE("ON", true, doNothing, noEvent)
   ,VALUE("OFF", false, doNothing, noEvent));
   
@@ -683,10 +659,6 @@ TOGGLE(displayShowHumidity, activeDisplayShowHumidity, "Humidity: ", doNothing, 
   ,VALUE("Hide", false, doNothing, enterEvent)
   ,VALUE("Show", true,  doNothing, enterEvent));
 
-TOGGLE(displayShowBattery, activeDisplayShowBattery, "Battery: ", doNothing, noEvent, wrapStyle
-  ,VALUE("Hide", false, doNothing, enterEvent)
-  ,VALUE("Show", true,  doNothing, enterEvent));
-
 TOGGLE(displayShowCO2, activeDisplayShowCO2, "CO2: ", doNothing, noEvent, wrapStyle
   ,VALUE("Hide", false, doNothing, enterEvent)
   ,VALUE("Show", true,  doNothing, enterEvent));
@@ -704,60 +676,12 @@ MENU(displayConfigMenu, "Display Config", doNothing, noEvent, wrapStyle
 #endif  
   ,FIELD(timeToDisplayOff, "Time To Off:", "", 0, 900, 5, 5, doNothing, noEvent, wrapStyle)
   ,SUBMENU(activeDisplayOnByPIRSensor)
-  ,SUBMENU(activeDisplayOffMenuOnBattery)
   ,SUBMENU(activeDisplayReverse)
   ,SUBMENU(activeDisplayShowTemperature)
   ,SUBMENU(activeDisplayShowHumidity)
-  ,SUBMENU(activeDisplayShowBattery)
   // ,SUBMENU(activeDisplayShowCO2)
   // ,SUBMENU(activeDisplayShowPM25)
   ,EXIT("<Back"));
-
-result doSetActiveNeopixelType(eventMask e, navNode &nav, prompt &item) {
-  #ifdef DEBUG_ARDUINOMENU
-    Serial.printf("-->[MENU] Setting selectedNeopixelType to %d\n",selectedNeopixelType);
-  #endif
-  setNeopixelType(selectedNeopixelType);
-  strip.show();
-  return proceed;
-}
-
-TOGGLE(selectedNeopixelType, activeNeopixelTypeMenu, "Neopixels: ", doNothing,noEvent, wrapStyle
-  ,VALUE("NEO_GRB",  NEO_GRB  + NEO_KHZ800, doSetActiveNeopixelType, anyEvent)
-  ,VALUE("NEO_RGB",  NEO_RGB  + NEO_KHZ800, doSetActiveNeopixelType, anyEvent)
-  ,VALUE("NEO_RGBW", NEO_RGBW + NEO_KHZ800, doSetActiveNeopixelType, anyEvent));
-
-  // Can add these really old Neopixel types if needed
-  // ,VALUE("NEO_GRB v1",  NEO_GRB  + NEO_KHZ400, doSetActiveNeopixelType, anyEvent)
-  // ,VALUE("NEO_RGB v1",  NEO_RGB  + NEO_KHZ400, doSetActiveNeopixelType, anyEvent)
-  // ,VALUE("NEO_RGBW v1", NEO_RGBW + NEO_KHZ400, doSetActiveNeopixelType, anyEvent)
-
-result doSetNeopixelBrightness(eventMask e, navNode &nav, prompt &item) {
-#ifdef DEBUG_ARDUINOMENU
-  Serial.printf("-->[MENU] Setting TFT brightness at %d", neopixelBrightness);
-  Serial.print(F("-->[MENU] action1 event:"));
-  Serial.println(e);
-  Serial.flush();
-#endif
-  setNeopixelBrightness(neopixelBrightness);
-  strip.show();
-  return proceed;
-}
-
-result doSetOuputsRelayMode(eventMask e, navNode &nav, prompt &item) {
-#ifdef DEBUG_ARDUINOMENU
-  Serial.printf("-->[MENU] Setting outputsModeRelay to %d", outputsModeRelay);
-  Serial.print(F("-->[MENU] action1 event:"));
-  Serial.println(e);
-  Serial.flush();
-#endif
-  outputsLoop();
-  return proceed;
-}
-
-TOGGLE(outputsModeRelay, outputsModeMenu, "GPIO Outs: ", doNothing,noEvent, wrapStyle
-  ,VALUE("RGB LED", false, doSetOuputsRelayMode, anyEvent)
-  ,VALUE("Relays", true, doSetOuputsRelayMode, anyEvent));
 
 
   #ifdef SUPPORT_BUZZER
@@ -789,15 +713,6 @@ MENU(buzzerConfigMenu, "Buzzer Config", doNothing, noEvent, wrapStyle
   ,EXIT("<Back"));
 #endif
 
-MENU(outputsConfigMenu, "Outputs Config", doNothing, noEvent, wrapStyle
-  #ifdef SUPPORT_BUZZER
-  ,SUBMENU(buzzerConfigMenu)
-  #endif  
-  ,FIELD(neopixelBrightness, "Neopix Bright", "%", 0, 255, 5, 10, doSetNeopixelBrightness, anyEvent, noStyle)
-  ,SUBMENU(activeNeopixelTypeMenu)
-  ,SUBMENU(outputsModeMenu)
-  ,EXIT("<Back"));
-
 MENU(configMenu, "Configuration", doNothing, noEvent, wrapStyle
   ,SUBMENU(CO2SensorConfigMenu)
   #ifdef SUPPORT_BLE
@@ -808,10 +723,11 @@ MENU(configMenu, "Configuration", doNothing, noEvent, wrapStyle
 #ifdef SUPPORT_ESPNOW
   ,SUBMENU(espnowConfigMenu)
 #endif  
-  ,SUBMENU(batteryConfigMenu)
   ,SUBMENU(temperatureConfigMenu)
   ,SUBMENU(displayConfigMenu)
-  ,SUBMENU(outputsConfigMenu)
+#ifdef SUPPORT_BUZZER
+  ,SUBMENU(buzzerConfigMenu)
+#endif
   ,OP("Save preferences", doSavePreferences, enterEvent)
   ,EXIT("<Back"));
 
@@ -838,7 +754,6 @@ public:
 };
 
 MENU(informationMenu, "Information", doNothing, noEvent, wrapStyle
-  ,FIELD(batteryVoltage, "Battery", "V", 0, 9, 0, 0, doNothing, noEvent, noStyle)
   ,OP("Comp " __DATE__ " at " __TIME__, doNothing, noEvent)
   ,OP("Version " CO2_GADGET_VERSION CO2_GADGET_REV, doNothing, noEvent)
   ,OP("" FLAVOUR, doNothing, noEvent)
@@ -946,8 +861,8 @@ const colorDef<uint8_t> colors[6] MEMMODE={
   {{1,1},{1,0,0}},//titleColor
 };
 
-#define fontX 5
-#define fontY 10
+#define fontX 6
+#define fontY 13
 // #define MENUFONT u8g2_font_7x13_mf
 // #define fontX 7
 // #define fontY 16
@@ -1162,7 +1077,6 @@ void initMenu() {
     if (!activeWIFI) {
         activeMQTTMenu[0].disable();  // Make MQTT active field unselectable if WIFI is not active
     }
-    batteryConfigMenu[1].disable();  // Make information field unselectable
     temperatureConfigMenu[0].disable();
     setCO2Sensor = selectedCO2Sensor;
 #ifdef DEBUG_ARDUINOMENU

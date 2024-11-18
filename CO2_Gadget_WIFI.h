@@ -1151,14 +1151,6 @@ void initWebServer() {
         }
     });
 
-    server.on("/readBatteryVoltage", HTTP_GET, [](AsyncWebServerRequest *request) {
-        if (request != nullptr) {
-            request->send(200, "text/plain", String(batteryVoltage));
-        } else {
-            Serial.println("---> [WiFi] Error: request is null");
-        }
-    });
-
     server.on("/pingServer", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/plain", "Server is running");
     });
@@ -1219,46 +1211,19 @@ void initWebServer() {
 #endif
                 request->send(200, "text/plain", "OK. Set Display brightness");
             };
-            // <CO2-GADGET_IP>/settings?showTemp=${inputShowTemp}&showHumidity=${inputShowHumidity}&showBattery=${inputShowBattery}
-            if (request->hasParam("showTemp") || request->hasParam("showHumidity") || request->hasParam("showBattery")) {
+            // <CO2-GADGET_IP>/settings?showTemp=${inputShowTemp}&showHumidity=${inputShowHumidity}
+            if (request->hasParam("showTemp") || request->hasParam("showHumidity")) {
                 displayShowTemperature = (request->getParam("showTemp")->value() == "true" || request->getParam("showTemp")->value() == "1");
                 displayShowHumidity = (request->getParam("showHumidity")->value() == "true" || request->getParam("showHumidity")->value() == "1");
-                displayShowBattery = (request->getParam("showBattery")->value() == "true" || request->getParam("showBattery")->value() == "1");
-                Serial.println("-->[WEBS] showTemp(" + request->getParam("showTemp")->value() + ") - showHumidity(" + request->getParam("showHumidity")->value() + ") - showBAttery(" + request->getParam("showBattery")->value() + ") in display");
+                Serial.println("-->[WEBS] showTemp(" + request->getParam("showTemp")->value() + ") - showHumidity(" + request->getParam("showHumidity")->value() + ") in display");
                 if (!inMenu) {
 #ifdef DEBUG_CAPTIVE_PORTAL
                     Serial.println("-->[WEBS] Set shouldRedrawDisplay to true");
 #endif
                     redrawDisplayOnNextLoop = true;
                 }
-                request->send(200, "text/plain", "OK. Showing/hidding Temp/Humidity/Battery in display");
+                request->send(200, "text/plain", "OK. Showing/hidding Temp/Humidity in display");
             };
-            // <CO2-GADGET_IP>/settings?displayShowBatteryVoltage=true
-            if (request->hasParam("displayShowBatteryVoltage")) {
-                String inputString = request->getParam("displayShowBatteryVoltage")->value();
-                if (inputString.equalsIgnoreCase("true") || inputString.equalsIgnoreCase("false")) {
-                    bool newValue = inputString.equalsIgnoreCase("true");
-                    displayShowBatteryVoltage = newValue;
-                    // Serial.printf("-->[WEBS] Received /settings command displayShowBatteryVoltage with parameter: %s\n", newValue ? "true" : "false");
-                    Serial.println("-->[WEBS] Received /settings command displayShowBatteryVoltage with parameter: " + inputString);
-                    request->send(200, "text/plain", "OK. Setting displayShowBatteryVoltage to " + inputString);
-                } else {
-                    request->send(400, "text/plain", "Error. Invalid parameter. Use 'true' or 'false'");
-                }
-            }
-            // <CO2-GADGET_IP>/settings?SetVRef=930
-            if (request->hasParam("SetVRef")) {
-                inputString = request->getParam("SetVRef")->value();
-                if (checkStringIsNumerical(inputString)) {
-                    // Serial.printf("-->[WEBS] Received /settings command SetVRef with parameter %s\n", inputString);
-                    Serial.println("-->[WEBS] Received /settings command SetVRef with parameter: " + inputString);
-                    battery.begin(vRef, voltageDividerRatio, &asigmoidal);
-                    vRef = inputString.toFloat();
-                    request->send(200, "text/plain", "OK. Setting VRef to " + inputString);
-                } else {
-                    request->send(400, "text/plain", "Error. VRef must have a number as parameter.");
-                }
-            }
         } else {
             request->send(400, "text/plain", "Error. No parameters received.");
         }

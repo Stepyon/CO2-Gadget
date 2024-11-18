@@ -142,9 +142,7 @@ String getCO2GadgetRevisionBranch() {
 }
 
 void upgradePreferences() {
-    if ((batteryDischargedMillivolts == 3500) && (prefVersion == 0) && (prefRevision == 0)) {
-        batteryDischargedMillivolts = 3200;
-        Serial.println("-->[PREF] Upgrading preferences (" + String(__func__) + ") batteryDischargedMillivolts to: " + String(batteryDischargedMillivolts));
+    if (prefVersion == 0 && prefRevision == 0) {
         prefRevision = 1;
         putPreferences();
     }
@@ -167,18 +165,12 @@ void printActualSettings() {
     Serial.println("-->[PREF] co2OrangeRange:\t #" + String(co2OrangeRange) + "#");
     Serial.println("-->[PREF] co2RedRange:\t #" + String(co2RedRange) + "#");
     Serial.println("-->[PREF] DisplayBrightness:\t #" + String(DisplayBrightness) + "#");
-    Serial.println("-->[PREF] neopixBright:\t #" + String(neopixelBrightness) + "#");
-    Serial.println("-->[PREF] selNeopxType:\t #" + String(selectedNeopixelType) + "#");
     Serial.println("-->[PREF] activeBLE is:\t#" + String(activeBLE ? "Enabled" : "Disabled") + "# (" + String(activeBLE) + ")");
     Serial.println("-->[PREF] activeWIFI is:\t#" + String(activeWIFI ? "Enabled" : "Disabled") + "# (" + String(activeWIFI) + ")");
     Serial.println("-->[PREF] activeMQTT is:\t#" + String(activeMQTT ? "Enabled" : "Disabled") + "# (" + String(activeMQTT) + ")");
     Serial.println("-->[PREF] activeESPNOW is:\t#" + String(activeESPNOW ? "Enabled" : "Disabled") + "# (" + String(activeESPNOW) + ")");
     Serial.println("-->[PREF] activeOTA is:\t#" + String(activeOTA ? "Enabled" : "Disabled") + "# (" + String(activeOTA) + ")");
     Serial.println("-->[PREF] rootTopic:\t#" + rootTopic + "#");
-    Serial.println("-->[PREF] hasBattery:\t#" + String(hasBattery ? "Enabled" : "Disabled") + "# (" + String(hasBattery) + ")");
-    Serial.println("-->[PREF] batDischgd:\t #" + String(batteryDischargedMillivolts) + "#");
-    Serial.println("-->[PREF] batChargd:\t #" + String(batteryFullyChargedMillivolts) + "#");
-    Serial.println("-->[PREF] vRef:\t #" + String(vRef) + "#");
     Serial.println("-->[PREF] mqttClientId:\t#" + mqttClientId + "#");
     Serial.println("-->[PREF] mqttShowInConsole:\t#" + String(mqttShowInConsole ? "Enabled" : "Disabled") + "# (" + String(mqttShowInConsole) + ")");
     Serial.println("-->[PREF] mqttBroker:\t#" + mqttBroker + "#");
@@ -191,7 +183,6 @@ void printActualSettings() {
     Serial.println("-->[PREF] tToPubESPNow:\t #" + String(timeBetweenESPNowPublish) + "#");
     Serial.println("-->[PREF] tKeepAlMQTT:\t #" + String(timeToKeepAliveMQTT) + "#");
     Serial.println("-->[PREF] tKeepAlESPNow:\t #" + String(timeToKeepAliveESPNow) + "#");
-    Serial.println("-->[PREF] dispOffOnExP:\t#" + String(displayOffOnExternalPower ? "Enabled" : "Disabled") + "# (" + String(displayOffOnExternalPower) + ")");
     Serial.println("-->[PREF] usePIR:\t#" + String(displayOnByPIRSensor ? "Enabled" : "Disabled") + "# (" + String(displayOnByPIRSensor) + ")");
     Serial.println("-->[PREF] wifiSSID:\t#" + wifiSSID + "#");
 #ifndef WIFI_PRIVACY
@@ -213,15 +204,12 @@ void printActualSettings() {
     Serial.println("-->[PREF] showFahrenheit is:\t#" + String(showFahrenheit ? "Fahrenheit" : "Celsius") + "#");
     Serial.println("-->[PREF] measInterval:\t #" + String(measurementInterval) + "#");
     Serial.println("-->[PREF] sampInterval:\t #" + String(sampleInterval) + "#");
-    Serial.println("-->[PREF] outModeRelay is:\t#" + String(outputsModeRelay ? "Relay" : "RGB LED") + "#");
     Serial.println("-->[PREF] channelESPNow:\t #" + String(channelESPNow) + "#");
     Serial.println("-->[PREF] boardIdESPNow:\t #" + String(boardIdESPNow) + "#");
     Serial.println("-->[PREF] peerESPNow:\t #" + String(peerESPNowAddress[0], HEX) + ":" + String(peerESPNowAddress[1], HEX) + ":" + String(peerESPNowAddress[2], HEX) + ":" + String(peerESPNowAddress[3], HEX) + ":" + String(peerESPNowAddress[4], HEX) + ":" + String(peerESPNowAddress[5], HEX) + "#");
 
     Serial.println("-->[PREF] showTemp:\t #" + String(displayShowTemperature ? "Show" : "Hide") + "#");
     Serial.println("-->[PREF] showHumidity:\t #" + String(displayShowHumidity ? "Show" : "Hide") + "#");
-    Serial.println("-->[PREF] showBattery:\t #" + String(displayShowBattery ? "Show" : "Hide") + "#");
-    Serial.println("-->[PREF] showBatteryVolt:\t #" + String(displayShowBatteryVoltage ? "Show" : "Hide") + "#");
     Serial.println("-->[PREF] showCO2:\t #" + String(displayShowCO2 ? "Show" : "Hide") + "#");
     Serial.println("-->[PREF] showPM25:\t #" + String(displayShowPM25 ? "Show" : "Hide") + "#");
 
@@ -277,8 +265,6 @@ void initPreferences() {
 #else
     DisplayBrightness = preferences.getUInt("DisplayBright", 100);
 #endif
-    neopixelBrightness = preferences.getUInt("neopixBright", 50);
-    selectedNeopixelType = preferences.getUInt("selNeopxType", NEO_GRB + NEO_KHZ800);
     activeBLE = preferences.getBool("activeBLE", true);
     activeWIFI = preferences.getBool("activeWIFI", true);
     activeMQTT = preferences.getBool("activeMQTT", false);
@@ -294,17 +280,12 @@ void initPreferences() {
         activeMQTT = false;
         preferences.putBool("activeMQTT", activeMQTT);
     }
-    hasBattery = preferences.getBool("hasBattery", false);
-    batteryDischargedMillivolts = preferences.getUInt("batDischgd", 3200);
-    batteryFullyChargedMillivolts = preferences.getUInt("batChargd", 4200);
-    vRef = preferences.getUInt("vRef", 930);  // Looks like, due to a bug, 930 is a goos starting number for vRef
     timeToDisplayOff = preferences.getUInt("tToDispOff", 60);
     timeBetweenMQTTPublish = preferences.getUInt("tToPubMQTT", 60);
     timeBetweenESPNowPublish = preferences.getUInt("tToPubESPNow", 60);
     timeToKeepAliveMQTT = preferences.getUInt("tKeepAlMQTT", 300);
     timeToKeepAliveESPNow = preferences.getUInt("tKeepAlESPNow", 300);
     displayOnByPIRSensor = preferences.getBool("usePIR", false);
-    displayOffOnExternalPower = preferences.getBool("dispOffOnExP", false);
     wifiSSID = preferences.getString("wifiSSID", wifiSSID).c_str();
     wifiPass = preferences.getString("wifiPass", wifiPass).c_str();
     hostName = preferences.getString("hostName", hostName).c_str();
@@ -324,7 +305,6 @@ void initPreferences() {
     measurementInterval = preferences.getUInt("measInterval", 10);
     sampleInterval = preferences.getUInt("sampInterval", 60);
     if (sampleInterval < 2) sampleInterval = 60;  // Default sample interval is 60 seconds
-    outputsModeRelay = preferences.getBool("outModeRelay", false);
     channelESPNow = preferences.getUInt("channelESPNow", ESPNOW_WIFI_CH);
     boardIdESPNow = preferences.getUInt("boardIdESPNow", 0);
 
@@ -338,8 +318,6 @@ void initPreferences() {
 
     displayShowTemperature = preferences.getBool("showTemp", true);
     displayShowHumidity = preferences.getBool("showHumidity", true);
-    displayShowBattery = preferences.getBool("showBattery", true);
-    displayShowBatteryVoltage = preferences.getBool("showBattVolt", false);
     displayShowCO2 = preferences.getBool("showCO2", true);
     displayShowPM25 = preferences.getBool("showPM25", true);
 
@@ -406,18 +384,12 @@ void putPreferences() {
     preferences.putUInt("co2OrangeRange", co2OrangeRange);
     preferences.putUInt("co2RedRange", co2RedRange);
     preferences.putUInt("DisplayBright", DisplayBrightness);
-    preferences.putUInt("neopixBright", neopixelBrightness);
-    preferences.putUInt("selNeopxType", selectedNeopixelType);
     preferences.putBool("activeBLE", activeBLE);
     preferences.putBool("activeWIFI", activeWIFI);
     preferences.putBool("activeMQTT", activeMQTT);
     preferences.putBool("activeESPNOW", activeESPNOW);
     preferences.putBool("activeOTA", activeOTA);
     preferences.putString("rootTopic", rootTopic);
-    preferences.putBool("hasBattery", hasBattery);
-    preferences.putUInt("batDischgd", batteryDischargedMillivolts);
-    preferences.putUInt("batChargd", batteryFullyChargedMillivolts);
-    preferences.putUInt("vRef", vRef);
     preferences.putString("mqttClientId", mqttClientId);
     preferences.putBool("mqttShowInCon", mqttShowInConsole);
     preferences.putString("mqttBroker", mqttBroker);
@@ -429,7 +401,6 @@ void putPreferences() {
     preferences.putUInt("tToPubMQTT", timeBetweenMQTTPublish);
     preferences.putUInt("tToPubESPNow", timeBetweenESPNowPublish);
     preferences.putBool("usePIR", displayOnByPIRSensor);
-    preferences.putBool("dispOffOnExP", displayOffOnExternalPower);
     preferences.putString("wifiSSID", wifiSSID);
     preferences.putString("wifiPass", wifiPass);
     preferences.putString("hostName", hostName);
@@ -448,15 +419,12 @@ void putPreferences() {
     preferences.putBool("showFahrenheit", showFahrenheit);
     preferences.putUInt("measInterval", measurementInterval);
     preferences.putUInt("sampInterval", sampleInterval);
-    preferences.putBool("outModeRelay", outputsModeRelay);
     preferences.putUInt("channelESPNow", channelESPNow);
     preferences.putUInt("boardIdESPNow", boardIdESPNow);
     preferences.putBytes("peerESPNow", peerESPNowAddress, 6);
 
     preferences.putBool("showTemp", displayShowTemperature);
     preferences.putBool("showHumidity", displayShowHumidity);
-    preferences.putBool("showBattery", displayShowBattery);
-    preferences.putBool("showBattVolt", displayShowBatteryVoltage);
     preferences.putBool("showCO2", displayShowCO2);
     preferences.putBool("showPM25", displayShowPM25);
 
@@ -514,18 +482,12 @@ String getActualSettingsAsJson(bool includePasswords = false) {
     doc["co2OrangeRange"] = co2OrangeRange;
     doc["co2RedRange"] = co2RedRange;
     doc["DisplayBright"] = DisplayBrightness;
-    doc["neopixBright"] = neopixelBrightness;
-    doc["selNeopxType"] = selectedNeopixelType;
     doc["activeBLE"] = activeBLE;
     doc["activeWIFI"] = activeWIFI;
     doc["activeMQTT"] = activeMQTT;
     doc["activeESPNOW"] = activeESPNOW;
     doc["activeOTA"] = activeOTA;
     doc["rootTopic"] = rootTopic;
-    doc["hasBattery"] = hasBattery;
-    doc["batDischgd"] = batteryDischargedMillivolts;
-    doc["batChargd"] = batteryFullyChargedMillivolts;
-    doc["vRef"] = vRef;
     doc["mqttClientId"] = mqttClientId;
     doc["mqttShowInCon"] = mqttShowInConsole;
     doc["mqttBroker"] = mqttBroker;
@@ -540,7 +502,6 @@ String getActualSettingsAsJson(bool includePasswords = false) {
     doc["tToPubMQTT"] = timeBetweenMQTTPublish;
     doc["tToPubESPNow"] = timeBetweenESPNowPublish;
     doc["usePIR"] = displayOnByPIRSensor;
-    doc["dispOffOnExP"] = displayOffOnExternalPower;
     doc["wifiSSID"] = wifiSSID;
     // if includePasswords is false, do not include the password
     if (includePasswords) {
@@ -561,7 +522,6 @@ String getActualSettingsAsJson(bool includePasswords = false) {
     doc["displayReverse"] = displayReverse;
     doc["showFahrenheit"] = showFahrenheit;
     doc["measurementInterval"] = measurementInterval;
-    doc["outModeRelay"] = outputsModeRelay;
     doc["channelESPNow"] = channelESPNow;
     doc["boardIdESPNow"] = boardIdESPNow;
 
@@ -576,8 +536,6 @@ String getActualSettingsAsJson(bool includePasswords = false) {
 
     doc["showTemp"] = displayShowTemperature;
     doc["showHumidity"] = displayShowHumidity;
-    doc["showBattery"] = displayShowBattery;
-    doc["showBattVolt"] = displayShowBatteryVoltage;
     doc["showCO2"] = displayShowCO2;
     doc["showPM25"] = displayShowPM25;
     doc["measInterval"] = measurementInterval;
@@ -674,12 +632,6 @@ bool handleSavePreferencesFromJSON(String jsonPreferences) {
 #endif
             }
         }
-        if (JsonDocument.containsKey("neopixBright")) {
-            neopixelBrightness = JsonDocument["neopixBright"];
-        }
-        if (JsonDocument.containsKey("selNeopxType")) {
-            selectedNeopixelType = JsonDocument["selNeopxType"];
-        }
         if (JsonDocument.containsKey("activeBLE")) {
             activeBLE = JsonDocument["activeBLE"];
         }
@@ -700,21 +652,6 @@ bool handleSavePreferencesFromJSON(String jsonPreferences) {
         }
         if (JsonDocument.containsKey("rootTopic")) {
             rootTopic = JsonDocument["rootTopic"].as<String>().c_str();
-        }
-        if (JsonDocument.containsKey("hasBattery")) {
-            hasBattery = JsonDocument["hasBattery"];
-        }
-        if (JsonDocument.containsKey("batDischgd")) {
-            batteryDischargedMillivolts = JsonDocument["batDischgd"];
-        }
-        if (JsonDocument.containsKey("batChargd")) {
-            batteryFullyChargedMillivolts = JsonDocument["batChargd"];
-        }
-        if (JsonDocument.containsKey("vRef") && (vRef != JsonDocument["vRef"])) {
-            Serial.println("-->[PREF] vRef changed from " + String(vRef) + " to " + String(JsonDocument["vRef"].as<String>()));
-            vRef = JsonDocument["vRef"];
-            battery.begin(vRef, voltageDividerRatio, &asigmoidal);
-            readBatteryVoltage();
         }
         if (JsonDocument.containsKey("mqttShowInCon")) {
             mqttShowInConsole = JsonDocument["mqttShowInCon"];
@@ -742,9 +679,6 @@ bool handleSavePreferencesFromJSON(String jsonPreferences) {
         }
         if (JsonDocument.containsKey("tToPubESPNow")) {
             timeBetweenESPNowPublish = JsonDocument["tToPubESPNow"];
-        }
-        if (JsonDocument.containsKey("dispOffOnExP")) {
-            displayOffOnExternalPower = JsonDocument["dispOffOnExP"];
         }
         if (JsonDocument.containsKey("wifiSSID")) {
             wifiSSID = JsonDocument["wifiSSID"].as<String>().c_str();
@@ -803,9 +737,6 @@ bool handleSavePreferencesFromJSON(String jsonPreferences) {
         if (JsonDocument.containsKey("sampleInterval")) {
             sampleInterval = JsonDocument["sampleInterval"];
         }
-        if (JsonDocument.containsKey("outModeRelay")) {
-            outputsModeRelay = JsonDocument["outModeRelay"];
-        }
         if (JsonDocument.containsKey("channelESPNow")) {
             channelESPNow = JsonDocument["channelESPNow"];
         }
@@ -833,18 +764,6 @@ bool handleSavePreferencesFromJSON(String jsonPreferences) {
         if (JsonDocument.containsKey("showHumidity") && (displayShowHumidity != JsonDocument["showHumidity"])) {
             Serial.println("-->[PREF] Display Humidity changed from " + String(displayShowHumidity) + " to " + String(JsonDocument["showHumidity"].as<String>()));
             displayShowHumidity = JsonDocument["showHumidity"];
-            shouldRedrawDisplay = true;
-        }
-
-        if (JsonDocument.containsKey("showBattery") && (displayShowBattery != JsonDocument["showBattery"])) {
-            Serial.println("-->[PREF] Display Battery changed from " + String(displayShowBattery) + " to " + String(JsonDocument["showBattery"].as<String>()));
-            displayShowBattery = JsonDocument["showBattery"];
-            shouldRedrawDisplay = true;
-        }
-
-        if (JsonDocument.containsKey("showBattVolt") && (displayShowBatteryVoltage != JsonDocument["showBattVolt"])) {
-            Serial.println("-->[PREF] Display Battery Voltage changed from " + String(displayShowBatteryVoltage) + " to " + String(JsonDocument["showBattVolt"].as<String>()));
-            displayShowBatteryVoltage = JsonDocument["showBattVolt"];
             shouldRedrawDisplay = true;
         }
 

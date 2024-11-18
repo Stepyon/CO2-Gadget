@@ -22,8 +22,8 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 char oled_msg[20];
 int displayWidth = 128;
 int displayHeight = 64;
-// #define MENUFONT u8g2_font_6x10_mf
-#define MENUFONT u8g2_font_5x8_mf
+#define MENUFONT u8g2_font_6x10_mf
+//#define MENUFONT u8g2_font_5x8_mf
 
 void setDisplayReverse(bool reverse) {
     if (reverse) {
@@ -119,6 +119,11 @@ void displayShowValues(bool forceRedraw = false) {
         u8g2.setFont(u8g2_font_5x7_tf);
         u8g2.setCursor(110, 51);
         u8g2.print("ppm");
+
+        if(displayShowTemperature || displayShowHumidity) {
+            u8g2.setFont(u8g2_font_6x10_mf);
+        }
+
         if (displayShowTemperature) {
             u8g2.setCursor(1, u8g2.getDisplayHeight());
             u8g2.print("T: ");

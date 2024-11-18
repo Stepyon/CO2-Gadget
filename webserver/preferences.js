@@ -35,7 +35,6 @@ function displayVersion() {
             // TO-DO: Change to use getFeaturesAsJson endpoint to check for "EINK" instead of firmFlavour to reduce complexity
             if (versionInfo.firmFlavour == 'GDEM0213B74' || versionInfo.firmFlavour == 'DEPG0213BN' || versionInfo.firmFlavour == 'GDEW0213M21' || versionInfo.firmFlavour == 'GDEM029T94' || versionInfo.firmFlavour == 'GDEH0154D67-WeAct' || versionInfo.firmFlavour == 'DEPG0213BN-WeAct' || versionInfo.firmFlavour == 'GDEW0213M21-WeAct' || versionInfo.firmFlavour == 'GDEMGxEPD2_290_BS-WeAct') {
                 document.getElementById("displayBrightDiv").classList.add("hidden");
-                document.getElementById("dispOffOnExPDiv").classList.add("hidden");
                 document.getElementById("tToDispOffDiv").classList.add("hidden");
             }
         })
@@ -94,12 +93,9 @@ function populateFormWithPreferences(preferences) {
     setFormCheckbox("showFahrenheit", preferences.showFahrenheit);
     setFormValue("altitudeMeters", preferences.altitudeMeters);
     setFormValue("measurementInterval", preferences.measurementInterval);
-    setFormCheckbox("outModeRelay", preferences.outModeRelay);
     setFormValue("channelESPNow", preferences.channelESPNow);
     setFormValue("boardIdESPNow", preferences.boardIdESPNow);
     setFormValue("peerESPNowAddress", preferences.peerESPNowAddress);
-    setFormValue("neopixBright", preferences.neopixBright);
-    setFormValue("selNeopxType", preferences.selNeopxType);
     setFormCheckbox("activeBLE", preferences.activeBLE);
     setFormCheckbox("activeMQTT", preferences.activeMQTT);
     setFormCheckbox("activeESPNOW", preferences.activeESPNOW);
@@ -109,10 +105,6 @@ function populateFormWithPreferences(preferences) {
     setFormValue("mqttBroker", preferences.mqttBroker);
     setFormValue("mqttUser", preferences.mqttUser);
     if (relaxedSecurity) setFormValue("mqttPass", preferences.mqttPass);
-    setFormCheckbox("hasBattery", preferences.hasBattery);
-    setFormValue("batDischgd", preferences.batDischgd);
-    setFormValue("batChargd", preferences.batChargd);
-    setFormValue("vRef", preferences.vRef);
     setFormValue("tToDispOff", preferences.tToDispOff);
     setFormValue("tToPubMQTT", preferences.tToPubMQTT);
     setFormValue("tToPubESPNow", preferences.tToPubESPNow);
@@ -120,10 +112,8 @@ function populateFormWithPreferences(preferences) {
     setFormValue("tKeepAlESPNow", preferences.tKeepAlESPNow);
     setFormCheckbox("showTemp", preferences.showTemp);
     setFormCheckbox("showHumidity", preferences.showHumidity);
-    setFormCheckbox("showBattery", preferences.showBattery);
     setFormCheckbox("showCO2", preferences.showCO2);
     setFormCheckbox("usePIR", preferences.usePIR);
-    setFormCheckbox("dispOffOnExP", preferences.dispOffOnExP);
     setFormCheckbox("displayReverse", preferences.displayReverse);
     setFormValue("DisplayBright", preferences.DisplayBright);
     setFormCheckbox("debugSensors", preferences.debugSensors);
@@ -196,23 +186,16 @@ function collectPreferencesData() {
         setValue("co2OrangeRange");
         setValue("co2RedRange");
         setValue("DisplayBright");
-        setValue("neopixBright");
-        setValue("selNeopxType");
         setValue("activeBLE", 'checked');
         setValue("activeWIFI", 'checked');
         setValue("activeMQTT", 'checked');
         setValue("activeESPNOW", 'checked');
         setValue("rootTopic");
-        setValue("hasBattery", 'checked');
-        setValue("batDischgd");
-        setValue("batChargd");
-        setValue("vRef");
         setValue("tToDispOff");
         setValue("tToPubMQTT");
         setValue("tToPubESPNow");
         setValue("tKeepAlMQTT");
         setValue("tKeepAlESPNow");
-        setValue("dispOffOnExP", 'checked');
         setValue("usePIR", 'checked');
         setValue("wifiSSID");
         setValue("hostName");
@@ -227,13 +210,11 @@ function collectPreferencesData() {
         setValue("displayReverse", 'checked');
         setValue("showFahrenheit", 'checked');
         setValue("measurementInterval");
-        setValue("outModeRelay", 'checked');
         setValue("channelESPNow");
         setValue("boardIdESPNow");
         setValue("peerESPNowAddress");
         setValue("showTemp", 'checked');
         setValue("showHumidity", 'checked');
-        setValue("showBattery", 'checked');
         setValue("showCO2", 'checked');
         setValue("mqttClientId");
         setValue("mqttShowInCon", 'checked');
@@ -416,36 +397,6 @@ function handleWiFiMQTTDependency() {
     // Initial call to set the correct state on page load
     updateMQTTState();
     updateWiFiState();
-}
-
-/**
- * Updates the battery voltage displayed on the page.
- */
-function updateBatteryVoltage(voltage) {
-    document.getElementById('currentVoltage').textContent = voltage + ' Volts';
-}
-
-function fetchAndUpdateBatteryVoltage() {
-    readBatteryVoltage()
-        .then(voltage => {
-            updateBatteryVoltage(voltage);
-        })
-        .catch(error => {
-            console.error('Error updating battery voltage:', error);
-        });
-}
-
-/**
- * Updates the VRef value on the server.
- */
-function updateVRef() {
-    const vRefValue = document.getElementById('vRef').value;
-    fetch(`/settings?SetVRef=${vRefValue}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Error updating VRef');
-            console.log('VRef updated successfully');
-        })
-        .catch(error => console.error('Error updating VRef:', error));
 }
 
 /**
@@ -680,19 +631,18 @@ function setDisplayBrightness() {
 }
 
 /**
-* Runtime show/hide Temp/Humidity/Battery in display
+* Runtime show/hide Temp/Humidity in display
 */
-function showTempHumBatt() {
+function showTempHum() {
     const inputShowTemp = document.getElementById("showTemp").checked;
     const inputShowHumidity = document.getElementById("showHumidity").checked;
-    const inputShowBattery = document.getElementById("showBattery").checked;
-    if (preferencesDebug) console.log("Show/hide Temp/Humidity/Battery in display");
-    fetch(`/settings?showTemp=${inputShowTemp}&showHumidity=${inputShowHumidity}&showBattery=${inputShowBattery}`)
+    if (preferencesDebug) console.log("Show/hide Temp/Humidity in display");
+    fetch(`/settings?showTemp=${inputShowTemp}&showHumidity=${inputShowHumidity}`)
         .then(response => {
-            if (!response.ok) throw new Error('Error setting show/hide Temp/Humidity/Battery in display');
-            if (preferencesDebug) console.log('Set show/hide Temp/Humidity/Battery in display successfully');
+            if (!response.ok) throw new Error('Error setting show/hide Temp/Humidity in display');
+            if (preferencesDebug) console.log('Set show/hide Temp/Humidity in display successfully');
         })
-        .catch(error => console.error('Error show/hide Temp/Humidity/Battery in display', error));
+        .catch(error => console.error('Error show/hide Temp/Humidity in display', error));
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -465,126 +465,48 @@
                 </div>
             </fieldset>
 
-            <!-- Outputs Group -->
+            <!-- Buzzer Group -->
             <fieldset>
-                <legend>Outputs</legend>
-                <!-- NeoPixel Group -->
-                <fieldset>
-                    <legend>NeoPixel</legend>
-
-                    <div class="form-group flex-align-center">
-                        <label for="neopixBright">Brightness:</label>
-                        <input type="number" id="neopixBright" name="neopixBright" value="">
-                        <span class="tooltip-icon">ℹ️</span>
-                        <span class="tooltip-text">Set the brightness of the NeoPixel. Lower values will decrease the
-                            brightness of the
-                            NeoPixel.</span>
-                    </div>
-
-                    <div class="form-group flex-align-center">
-                        <label for="selNeopxType">NeoPixel Type:</label>
-                        <input type="number" id="selNeopxType" name="selNeopxType" value="">
-                        <span class="tooltip-icon">ℹ️</span>
-                        <span class="tooltip-text">The type of NeoPixel used. 0 = NEO_GRB + NEO_KHZ800, 1 = NEO_RGB +
-                            NEO_KHZ800, 2 = NEO_RGBW +
-                            NEO_KHZ800.</span>
-                    </div>
-                </fieldset>
-
-                <!-- Buzzer Group -->
-                <fieldset>
-                    <legend>Buzzer</legend>
-
-                    <div class="form-group flex-align-center">
-                        <label for="timeBtwnBzr">Beeps:</label>
-                        <select id="timeBtwnBzr" name="timeBtwnBzr" style="margin-right: 10px;">
-                            <option value="-1">OFF</option>
-                            <option value="0">One time</option>
-                            <option value="5">Every 5 sec</option>
-                            <option value="10">Every 10 sec</option>
-                            <option value="15">Every 15 sec</option>
-                            <option value="30">Every 30 sec</option>
-                            <option value="60">Every 1 min</option>
-                            <option value="120">Every 2 min</option>
-                            <option value="300">Every 5 min</option>
-                        </select>
-                        <span class="tooltip-icon" style="margin-right: 5px;">ℹ️</span>
-                        <span class="tooltip-text">Time between buzzer beeps. Set to OFF to disable the buzzer.</span>
-                    </div>
-                    <div class="form-group flex-align-center">
-                        <label for="toneBzrBeep">Tone:</label>
-                        <select id="toneBzrBeep" name="toneBzrBeep" style="margin-right: 10px;">
-                            <option value="1500">High</option>
-                            <option value="1000">Med</option>
-                            <option value="300">Low</option>
-                        </select>
-                        <span class="tooltip-icon" style="margin-right: 5px;">ℹ️</span>
-                        <span class="tooltip-text">The tone of the buzzer beep. Higher values will increase the pitch of
-                            the beep.</span>
-                        </div>
-                    <div class="form-group flex-align-center">
-                        <label for="durBzrBeep">Duration:</label>
-                        <select id="durBzrBeep" name="durBzrBeep" style="margin-right: 10px;">
-                            <option value="50">Short</option>
-                            <option value="150">Medium</option>
-                            <option value="300">Long</option>
-                        </select>
-                        <span class="tooltip-icon" style="margin-right: 5px;">ℹ️</span>
-                        <span class="tooltip-text">The duration of the buzzer beep. Longer values will increase the
-                            duration of the beep.</span>
-                        </div>
-                </fieldset>
-                <div class="form-group flex-align-center">
-                    <label for="outModeRelay">GPIO Outputs in Relay Mode:</label>
-                    <input type="checkbox" id="outModeRelay" name="outModeRelay">
-                    <span class="tooltip-icon">ℹ️</span>
-                    <span class="tooltip-text">Check this box if you are using a relay to control the GPIO outputs. This
-                        will adjust the
-                        logic of the outputs.</span>
-                </div>
-            </fieldset>
-
-            <!-- Battery Group -->
-            <fieldset>
-                <legend>Battery</legend>
+                <legend>Buzzer</legend>
 
                 <div class="form-group flex-align-center">
-                    <label for="hasBattery">Has Battery installed:</label>
-                    <input type="checkbox" id="hasBattery" name="hasBattery">
-                    <span class="tooltip-icon">ℹ️</span>
-                    <span class="tooltip-text">Check this box if you have a battery installed. This will enable the
-                        battery settings and optimize CO2 Gadget behavior for battery operation.</span>
-                </div>
-
-                <div class="form-group flex-align-center">
-                    <label for="batDischgd">Battery Discharged Millivolts:</label>
-                    <input type="number" id="batDischgd" name="batDischgd" value="">
-                    <span class="tooltip-icon">ℹ️</span>
-                    <span class="tooltip-text">The voltage at which the battery is considered discharged. Used to
-                        calculate the battery
-                        level.</span>
-                </div>
-
-                <div class="form-group flex-align-center">
-                    <label for="batChargd">Battery Fully Charged Millivolts:</label>
-                    <input type="number" id="batChargd" name="batChargd" value="">
-                    <span class="tooltip-icon">ℹ️</span>
-                    <span class="tooltip-text">The voltage at which the battery is considered fully charged. Used to
-                        calculate the battery
-                        level. You should have a very good reason to modify this value.</span>
-                </div>
-
-                <div class="form-group flex-align-center">
-                    <label for="vRef">VRef:</label>
-                    <input type="number" id="vRef" name="vRef" value="" style="margin-right: 10px;">
-                    <span id="currentVoltage" style="margin-right: 10px;">0 Volts</span>
+                    <label for="timeBtwnBzr">Beeps:</label>
+                    <select id="timeBtwnBzr" name="timeBtwnBzr" style="margin-right: 10px;">
+                        <option value="-1">OFF</option>
+                        <option value="0">One time</option>
+                        <option value="5">Every 5 sec</option>
+                        <option value="10">Every 10 sec</option>
+                        <option value="15">Every 15 sec</option>
+                        <option value="30">Every 30 sec</option>
+                        <option value="60">Every 1 min</option>
+                        <option value="120">Every 2 min</option>
+                        <option value="300">Every 5 min</option>
+                    </select>
                     <span class="tooltip-icon" style="margin-right: 5px;">ℹ️</span>
-                    <span class="tooltip-text">The reference voltage for the battery level calculation. Used to
-                        calculate the battery
-                        level. Must be set so that the battery voltage is shown correctly. If you don't have a
-                        multimeter, connect a
-                        fully charged battery and set this value to read 4.20 Volts.</span>
+                    <span class="tooltip-text">Time between buzzer beeps. Set to OFF to disable the buzzer.</span>
                 </div>
+                <div class="form-group flex-align-center">
+                    <label for="toneBzrBeep">Tone:</label>
+                    <select id="toneBzrBeep" name="toneBzrBeep" style="margin-right: 10px;">
+                        <option value="1500">High</option>
+                        <option value="1000">Med</option>
+                        <option value="300">Low</option>
+                    </select>
+                    <span class="tooltip-icon" style="margin-right: 5px;">ℹ️</span>
+                    <span class="tooltip-text">The tone of the buzzer beep. Higher values will increase the pitch of
+                        the beep.</span>
+                    </div>
+                <div class="form-group flex-align-center">
+                    <label for="durBzrBeep">Duration:</label>
+                    <select id="durBzrBeep" name="durBzrBeep" style="margin-right: 10px;">
+                        <option value="50">Short</option>
+                        <option value="150">Medium</option>
+                        <option value="300">Long</option>
+                    </select>
+                    <span class="tooltip-icon" style="margin-right: 5px;">ℹ️</span>
+                    <span class="tooltip-text">The duration of the buzzer beep. Longer values will increase the
+                        duration of the beep.</span>
+                    </div>
             </fieldset>
 
             <!-- Display Preferences Group -->
@@ -593,23 +515,16 @@
 
                 <div class="form-group flex-align-center">
                     <label for="showTemp">Show Temperature:</label>
-                    <input type="checkbox" id="showTemp" name="showTemp" onchange="showTempHumBatt()">
+                    <input type="checkbox" id="showTemp" name="showTemp" onchange="showTempHum()">
                     <span class="tooltip-icon">ℹ️</span>
                     <span class="tooltip-text">Show temperature readings on the display.</span>
                 </div>
 
                 <div class="form-group flex-align-center">
                     <label for="showHumidity">Show Humidity:</label>
-                    <input type="checkbox" id="showHumidity" name="showHumidity" onchange="showTempHumBatt()">
+                    <input type="checkbox" id="showHumidity" name="showHumidity" onchange="showTempHum()">
                     <span class="tooltip-icon">ℹ️</span>
                     <span class="tooltip-text">Show humidity readings on the display.</span>
-                </div>
-
-                <div class="form-group flex-align-center">
-                    <label for="showBattery">Show Battery:</label>
-                    <input type="checkbox" id="showBattery" name="showBattery" onchange="showTempHumBatt()">
-                    <span class="tooltip-icon">ℹ️</span>
-                    <span class="tooltip-text">Show battery level on the display.</span>
                 </div>
 
                 <div class="form-group flex-align-center hidden">
@@ -626,13 +541,6 @@
                     <span class="tooltip-text">Time to turn off the display after the last button press. Set to 0 to
                         disable this
                         feature.</span>
-                </div>
-
-                <div class="form-group flex-align-center" id="dispOffOnExPDiv">
-                    <label for="dispOffOnExP">Turn Off on USB Power:</label>
-                    <input type="checkbox" id="dispOffOnExP" name="dispOffOnExP">
-                    <span class="tooltip-icon">ℹ️</span>
-                    <span class="tooltip-text">Turn off the display when USB power is detected.</span>
                 </div>
 
                 <div class="form-group flex-align-center">

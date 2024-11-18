@@ -42,8 +42,6 @@ void initBLE() {
             Serial.print("-->[BLE ] History interval set to: ");
             Serial.print(provider.getHistoryInterval() / 1000);
             Serial.println(" seconds");
-            // Set initial battery level
-            provider.setBatteryLevel(batteryLevel);
             bleInitialized = true;
         }
     }
@@ -61,8 +59,6 @@ void initBLE() {
 void publishBLE() {
     static int64_t lastMeasurementTimeMs = 0;
     static int measurementIntervalMs = 1000;
-    static int64_t lastBatteryLevelUpdateMs = 0;
-    static int batteryLevelUpdateIntervalMs = 60000;
 #ifdef SUPPORT_BLE
     if (isDownloadingBLE) {
         return;
@@ -78,18 +74,6 @@ void publishBLE() {
 #ifdef DEBUG_BLE
         Serial.println("-->[BLE ] Sent CO2: " + String(co2) + " ppm, Temp: " + String(temp) + " C, Hum: " + String(hum) + " %");
         publishMQTTLogData("-->[BLE ] Sent CO2: " + String(co2) + " ppm, Temp: " + String(temp) + " C, Hum: " + String(hum) + " %");
-        delay(20);
-#endif
-    }
-    if (millis() - lastBatteryLevelUpdateMs >= batteryLevelUpdateIntervalMs) {
-        lastBatteryLevelUpdateMs = millis();
-        if (batteryLevel == 0) {
-            batteryLevel = 100;
-        }
-        provider.setBatteryLevel(batteryLevel);
-#ifdef DEBUG_BLE
-        Serial.println("-->[BLE ] Sent Battery Level: " + String(batteryLevel) + "%");
-        publishMQTTLogData("-->[BLE ] Sent Battery Level: " + String(batteryLevel) + "%");
         delay(20);
 #endif
     }
