@@ -450,29 +450,36 @@ void outputsRelays() {
     }
 }
 
+bool orangeLedOn = false;
+bool redLedOn = false;
+
+#ifdef GREEN_PIN
+bool greenLedOn = false;
+#endif
+
 void outputsRGBLeds() {
     if ((outputsModeRelay) || (co2 == 0)) return;  // Don't turn on led until there is CO2 Data
-    if (co2 > co2RedRange) {
-#ifdef GREEN_PIN
-        digitalWrite(GREEN_PIN, GREEN_PIN_LOW);
-#endif
-        digitalWrite(RED_PIN, RED_PIN_HIGH);
-        digitalWrite(BLUE_PIN, BLUE_PIN_LOW);
-        return;
+    
+    bool redNewState = co2 > co2RedRange;
+    bool orangeNewState = !redNewState && co2 >= co2OrangeRange;
+
+    if(redNewState != redLedOn) {
+        redLedOn = redNewState;
+        digitalWrite(RED_PIN, redNewState ? RED_PIN_HIGH : RED_PIN_LOW);
     }
-    if (co2 >= co2OrangeRange) {
-#ifdef GREEN_PIN
-        digitalWrite(GREEN_PIN, GREEN_PIN_HIGH);
-#endif
-        digitalWrite(BLUE_PIN, BLUE_PIN_HIGH);
-        digitalWrite(RED_PIN, RED_PIN_LOW);
-        return;
+
+    if(orangeNewState != orangeLedOn) {
+        orangeLedOn = orangeNewState;
+        digitalWrite(BLUE_PIN, orangeNewState ? BLUE_PIN_HIGH : BLUE_PIN_LOW);
     }
+
 #ifdef GREEN_PIN
-    digitalWrite(GREEN_PIN, GREEN_PIN_HIGH);
+    bool greenNewState = co2 < co2OrangeRange;
+    if(greenNewState != greenLedOn) {
+        greenLedOn = greenNewState;
+        digitalWrite(GREEN_PIN, greenNewState ? GREEN_PIN_HIGH : GREEN_PIN_LOW);
+    }
 #endif
-    digitalWrite(BLUE_PIN, BLUE_PIN_LOW);
-    digitalWrite(RED_PIN, RED_PIN_LOW);
 }
 
 void outputsLoop() {

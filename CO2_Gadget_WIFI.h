@@ -1450,6 +1450,7 @@ bool connectToWiFi() {
     WiFi.disconnect(true);  // disconnect form wifi to set new wifi connection
     delay(100);
     WiFi.mode(WIFI_STA);
+    WiFi.setTxPower(WIFI_POWER_19_5dBm);
 
     if (useStaticIP) {
         if (!WiFi.config(staticIP, gateway, subnet, dns1, dns2)) {
