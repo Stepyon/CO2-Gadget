@@ -1415,7 +1415,7 @@ bool connectToWiFi() {
     WiFi.disconnect(true);  // disconnect form wifi to set new wifi connection
     delay(100);
     WiFi.mode(WIFI_STA);
-    WiFi.setTxPower(WIFI_POWER_19_5dBm);
+    WiFi.setTxPower(WIFI_POWER_17dBm);
 
     if (useStaticIP) {
         if (!WiFi.config(staticIP, gateway, subnet, dns1, dns2)) {
@@ -1549,7 +1549,7 @@ static const void initCaptivePortal() {
     }
     WiFi.disconnect(true);
     delay(20);
-    WiFi.softAP("CO2-Gadget", "emariete");  // SSID, password
+    WiFi.softAP("CO2-Gadget");  // SSID, password
     dnsServer.start(53, "*", WiFi.softAPIP());
     server.end();
     delay(20);

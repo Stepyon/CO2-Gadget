@@ -1,7 +1,7 @@
 {
   "name": "CO2 Gadget DIY Craic mod",
   "flavour": "esp32dev_OLED",
-  "version": "20241118",
+  "version": "20241209",
   "new_install_prompt_erase": true,
   "new_install_improv_wait_time": 20,
   "builds": [

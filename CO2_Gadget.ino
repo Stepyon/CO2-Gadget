@@ -156,7 +156,7 @@ uint64_t timeInitializationCompleted = 0;
 
 // Variables to control automatic display off to save power
 uint32_t actualDisplayBrightness = 0;  // To know if it's on or off
-bool displayOnByPIRSensor = false;
+bool displayOnByPIRSensor = true;
 uint16_t timeToDisplayOff = 0;                // Time in seconds to turn off the display to save power.
 volatile uint64_t lastTimeButtonPressed = 0;  // Last time stamp button up was pressed
 

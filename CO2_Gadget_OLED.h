@@ -45,7 +45,9 @@ void setDisplayBrightness(uint16_t newBrightness) {
     if(actualDisplayBrightness == 0){
       u8g2.setPowerSave(0);
     }
-    u8g2.setContrast(newBrightness);
+    if(actualDisplayBrightness != newBrightness) {
+      u8g2.setContrast(newBrightness);
+    }
   }
 
   actualDisplayBrightness = newBrightness;
@@ -87,13 +89,7 @@ bool displayNotification(String notificationText, String notificationText2, noti
 void initDisplay(bool fastMode = false) { // fastMode not used in OLED display. Just for compatibility with TFT and other displays.
   Serial.printf("-->[OLED] Initialized: \t#%s#\n",
                 ((u8g2.begin()) ? "OK" : "Failed"));
-  u8g2.firstPage();
-  do {
-    u8g2.setFont(u8g2_font_ncenB12_tr);
-    u8g2.drawStr(0, 15, "  eMariete.com");
-    u8g2.drawStr(0, 33, "   CO2 Gadget");
-    u8g2.drawStr(0, 51, "  Air  Quality");
-  } while (u8g2.nextPage());
+
   u8g2.setFont(MENUFONT);
   if (displayReverse) {
     u8g2.setDisplayRotation(U8G2_R2);
@@ -105,9 +101,43 @@ void initDisplay(bool fastMode = false) { // fastMode not used in OLED display. 
   delay(1000);
 }
 
+
+#ifdef SUPPORT_CAPTIVE_PORTAL
+int prevTimeOut = -1;
+void displayCaptivePortalInfo() {
+  int timeout = (timeToWaitForCaptivePortal - (millis() - timeCaptivePortalStarted) / 1000);
+  if(timeout < 0) {
+    timeout = 0;
+  }
+
+  String timeLeft = "Timeout in: " + String(timeout) + "s";
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_6x10_mf);
+    u8g2.drawStr(0, 10, "Couldn't connect WIFI");
+    u8g2.drawStr(0, 24, "Captive Portal Active");
+    u8g2.drawStr(0, 37, "SSID:      CO2-Gadget");
+    u8g2.drawStr(0, 50, "IP:       192.168.4.1");
+    u8g2.setCursor(0, 63);
+    u8g2.print(timeLeft);
+  } while (u8g2.nextPage());
+  u8g2.setFont(MENUFONT);
+  shouldRedrawDisplay = prevTimeOut != timeout;
+  prevTimeOut = timeout;
+}
+#endif
+
 void displayShowValues(bool forceRedraw = false) {  
-    if ((co2 == 0) || (co2 > 9999)) return;
-    String co2Str = String(co2);
+#ifdef SUPPORT_CAPTIVE_PORTAL
+    if(captivePortalActive) {
+      displayCaptivePortalInfo();
+      return;
+    }
+#endif
+    //if ((co2 == 0) || (co2 > 9999)) return;
+
+    String co2Str = (co2 == 0 || co2 > 9999) ? "0000" : String(co2);
+
     if (co2Str.length() < 4) {
         co2Str = " " + co2Str;
     }

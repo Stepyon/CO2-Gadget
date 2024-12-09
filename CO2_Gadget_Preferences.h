@@ -285,7 +285,7 @@ void initPreferences() {
     timeBetweenESPNowPublish = preferences.getUInt("tToPubESPNow", 60);
     timeToKeepAliveMQTT = preferences.getUInt("tKeepAlMQTT", 300);
     timeToKeepAliveESPNow = preferences.getUInt("tKeepAlESPNow", 300);
-    displayOnByPIRSensor = preferences.getBool("usePIR", false);
+    displayOnByPIRSensor = preferences.getBool("usePIR", displayOnByPIRSensor);
     wifiSSID = preferences.getString("wifiSSID", wifiSSID).c_str();
     wifiPass = preferences.getString("wifiPass", wifiPass).c_str();
     hostName = preferences.getString("hostName", hostName).c_str();
