@@ -1,26 +1,12 @@
-[![PlatformIO](https://github.com/melkati/CO2-Gadget/workflows/PlatformIO/badge.svg)](https://github.com/melkati/CO2-Gadget/actions/)
-[![Telegram Group](https://img.shields.io/endpoint?color=neon&style=flat-square&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Femariete_chat)](https://t.me/emariete_chat)
-![Twitter Follow](https://img.shields.io/twitter/follow/e_mariete?style=social)
-[![GitHub stars](https://img.shields.io/github/stars/melkati/CO2-Gadget.svg?style=social&label=Star)](https://github.com/melkati/CO2-Gadget/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/melkati/CO2-Gadget.svg?style=social&label=Fork)](https://github.com/melkati/CO2-Gadget/network)
-
 <table align="center">
 	<tr>
 		<td>
-			Don't forget to star ⭐ this repository NOW!
+			See the datailed DIY guide for a CO2 gadget modification based on this firmware fork on <a href="https://diycraic.com/2024/12/09/diy-high-quality-advanced-co2-sensor-for-home-assistant">diycraic.com</a>
 		</td>
 	</tr>
 </table>
 
-<table align="center">
-	<tr>
-		<td>
-			<a href="https://github.com/melkati/CO2-Gadget/issues/198">🌟 Calling All Tech Enthusiasts! Join the CO2 Gadget Testing Adventure 🌟</a>
-		</td>
-	</tr>
-</table>
-
-
+Below is the original firmware documentation:
 # CO2-Gadget
 
 **CO2-Gadget** is an advanced firmware for CO2 Monitors/Meters based on ESP32. It's designed for flexibility, supporting a variety of popular sensors, displays, and communication protocols. With features like real-time visualization, data logging, and over-the-air updates, CO2-Gadget is perfect for both developers and end-users looking to monitor air quality effectively.
