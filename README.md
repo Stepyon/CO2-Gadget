@@ -1,7 +1,7 @@
 <table align="center">
 	<tr>
 		<td>
-			See the datailed DIY guide for a CO2 gadget modification based on this firmware fork on <a href="https://diycraic.com/2024/12/09/diy-high-quality-advanced-co2-sensor-for-home-assistant">diycraic.com</a>
+			See the datailed DIY guide for this CO2 gadget modification based on this firmware fork on <a href="https://diycraic.com/2024/12/09/diy-high-quality-advanced-co2-sensor-for-home-assistant">diycraic.com</a>
 		</td>
 	</tr>
 </table>
