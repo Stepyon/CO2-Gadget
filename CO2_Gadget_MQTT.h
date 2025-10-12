@@ -216,9 +216,9 @@ bool publishMQTTDiscovery(int qos) {
     // allSendsSuccessed |= sendMQTTDiscoveryTopic("",                 "",                  "diagnostic",       "",      "IP",          "IP",                   "network-outline",          "",         qos);
     // allSendsSuccessed |= sendMQTTDiscoveryTopic("",                 "",                  "diagnostic",       "",      "status",      "Status",               "list-status",              "",         qos);
 
-    allSendsSuccessed |= sendMQTTDiscoveryTopic("carbon_dioxide",   "",                  "",                "",      "co2",         "CO2",                  "molecule-co2",                         "ppm",      qos);
-    allSendsSuccessed |= sendMQTTDiscoveryTopic("temperature",      "",                  "",                "",      "temp",        "Temperature",          "temperature-celsius",                  "°C",       qos);
-    allSendsSuccessed |= sendMQTTDiscoveryTopic("humidity",         "",                  "",                "",      "humi",        "Humidity",             "water-percent",                        "%",        qos);
+    allSendsSuccessed |= sendMQTTDiscoveryTopic("carbon_dioxide",   "measurement",       "diagnostic",                "",      "co2",         "CO2",                  "molecule-co2",                         "ppm",      qos);
+    allSendsSuccessed |= sendMQTTDiscoveryTopic("temperature",      "measurement",       "diagnostic",                "",      "temp",        "Temperature",          "temperature-celsius",                  "°C",       qos);
+    allSendsSuccessed |= sendMQTTDiscoveryTopic("humidity",         "measurement",       "diagnostic",                "",      "humi",        "Humidity",             "water-percent",                        "%",        qos);
     // allSendsSuccessed |= sendMQTTDiscoveryTopic("",              "",                  "diagnostic",       "",      "error",       "Error",                "alert-circle-outline",     "",         qos);
     // allSendsSuccessed |= sendMQTTDiscoveryTopic("",              "",                  "diagnostic",       "",      "json",        "JSON",                 "code-json",                "",         qos);
     // allSendsSuccessed |= sendMQTTDiscoveryTopic("",              "",                  "",                 "",      "problem",     "Problem",              "alert-outline",            "",         qos);  // Special binary sensor which is based on error topic
